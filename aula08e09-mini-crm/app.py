@@ -1,3 +1,6 @@
+from re import search
+from sys import path
+
 from model import model_lead
 import control
 
@@ -23,13 +26,40 @@ def list_leads():
         print("Nenhum lead ainda")
         return
 
-    print(leads)
+    print(f"# | {"Nome":<10} | {"E-mail":<10} | Empresa")
+    for i, lead in enumerate(leads):
+        print(f"{i:02d} | {lead["name"]} | {lead["email"]} | {lead["company"]}")
+
+def search_leads():
+    query = input("Buscar por: ").strip().lower()
+    if not query:
+        print("Consulta vazia")
+        return
+
+    # envia a query para o control realizar a busca no leads.json
+    leads_finded = control.read_leads_search(query)
+
+    print(f"# | {"Nome":<10} | {"E-mail":<10} | Empresa")
+    for i, lead in leads_finded:
+        print(f"{i:02d} | {lead["name"]} | {lead["email"]} | {lead["company"]}")
+
+
+
+def export_leads():
+    path_csv = control.export_csv()
+
+    if path_csv is None:
+        print("Não foi possível exportar os leads")
+    else:
+        print(f"Exportado para {path_csv}")
 
 def main():
     while True:
         print("\nMini CRM de Leads")
         print("[1] Adicionar lead")
         print("[2] Listar leads")
+        print("[3] Buscar (nome/email/empresa)")
+        print("[4] Exportar CSV")
         print("[0] Sair do programa")
 
         opt = input("Escolha uma opção: ")
@@ -38,6 +68,10 @@ def main():
             add_lead()
         elif opt == "2":
             list_leads()
+        elif opt == "3":
+            search_leads()
+        elif opt == "4":
+            export_leads()
         elif opt == "0":
             print("Até mais...")
             break
